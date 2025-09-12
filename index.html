@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Recommendation Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(to right top, #65dfc9, #6cdbeb);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 480px;
+            height: 90vh;
+            max-height: 720px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chat-header {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            max-width: 75%;
+            padding: 12px 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .bot-message {
+            background-color: #eef1f5;
+            color: #333;
+            align-self: flex-start;
+            border-radius: 20px 20px 20px 5px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            align-self: flex-end;
+            border-radius: 20px 20px 5px 20px;
+        }
+        #input-container {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            background-color: #fff;
+        }
+        #user-input {
+            flex-grow: 1;
+            border: none;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 12px 18px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+        #user-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+        #send-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            margin-left: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #send-btn:hover {
+            background-color: #0056b3;
+        }
+        #send-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chatbot-container">
+        <div id="chat-header">
+            Career Advisor Bot
+        </div>
+        <div id="chat-window">
+        </div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type a message...">
+            <button id="send-btn">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        const ADZUNA_APP_ID = "b00b1439";
+        const ADZUNA_APP_KEY = "8668eaab747f3ed6695e1df73d416a5a";
+
+        let conversationState = 0;
+        const userDetails = {
+            cgpa: null,
+            course: '',
+            skills: ''
+        };
+        
+        const questions = [
+            "Hello! I'm here to help you with career recommendations. To start, what is your CGPA (e.g., 8.5)?",
+            "Great! Now, what is your course or major? (e.g., computer science, mechanical, electronics, AI&ML, civil)"
+        ];
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function botResponse(text) {
+            setTimeout(() => {
+                addMessage(text, 'bot');
+            }, 500);
+        }
+
+        function getSkillsQuestion(course) {
+            const courseLower = course.toLowerCase();
+            let skillsExample = "";
+
+            if (courseLower.includes('computer science') || courseLower.includes('information technology')) {
+                skillsExample = "python, java, data analysis, UI/UX";
+            } else if (courseLower.includes('mechanical')) {
+                skillsExample = "CAD, robotics, thermal design, manufacturing";
+            } else if (courseLower.includes('electronics')) {
+                skillsExample = "embedded systems, VLSI, networking, signal processing";
+            } else if (courseLower.includes('ai') || courseLower.includes('ml')) {
+                skillsExample = "python, tensorflow, data science, NLP";
+            } else if (courseLower.includes('civil')) {
+                skillsExample = "structural design, AutoCAD, surveying, project management";
+            } else {
+                skillsExample = "python, design, marketing, data analysis";
+            }
+            
+            return `Thanks. Finally, what are some of your skills or interests? (e.g., ${skillsExample})`;
+        }
+
+        async function getRecommendation() {
+            const searchQuery = `${userDetails.skills} ${userDetails.course}`;
+            const countryCode = 'in'; 
+            const apiUrl = `https://api.adzuna.com/v1/api/jobs/${countryCode}/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=3&what=${encodeURIComponent(searchQuery)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    let recommendationText = `Based on a live job search in your region for "${searchQuery}", here are some potential career paths:\n\n`;
+                    
+                    data.results.forEach((job, index) => {
+                        const cleanDescription = job.description.replace(/<[^>]*>?/gm, '');
+                        recommendationText += `${index + 1}. ${job.title}\nDescription: ${cleanDescription.substring(0, 150)}...\n\n`;
+                    });
+                    
+                    return recommendationText;
+                } else {
+                    return `I couldn't find any specific job listings for "${searchQuery}". I'd recommend broadening your search terms or exploring roles like Project Coordinator or Business Analyst.`;
+                }
+            } catch (error) {
+                console.error("API Error:", error);
+                return "Sorry, I'm having trouble connecting to the job search service right now. Please check your internet connection and API keys.";
+            }
+        }
+        
+        async function handleConversation(input) {
+            switch (conversationState) {
+                case 0:
+                    if (isNaN(parseFloat(input))) {
+                        botResponse("Please enter a valid number for your CGPA.");
+                        return;
+                    }
+                    userDetails.cgpa = parseFloat(input);
+                    
+                    if (userDetails.cgpa < 6.0) {
+                        botResponse("Got it. Remember, your CGPA is just one number. Practical skills and projects are what truly matter. Let's find a great path for you based on your interests.");
+                        
+                        conversationState++; 
+                        setTimeout(() => {
+                            botResponse(questions[conversationState]);
+                        }, 800);
+            
+                    } else {
+                        conversationState++;
+                        botResponse(questions[conversationState]);
+                    }
+                    break;
+
+                case 1:
+                    userDetails.course = input;
+                    conversationState++;
+                    const skillsQuestion = getSkillsQuestion(userDetails.course);
+                    botResponse(skillsQuestion);
+                    break;
+
+                case 2:
+                    userDetails.skills = input;
+                    
+                    botResponse("Thank you! Searching for live career data based on your profile...");
+
+                    const recommendation = await getRecommendation(); 
+                    botResponse(recommendation);
+
+                    setTimeout(() => {
+                        botResponse("If you want to start a new search, just type 'reset'.");
+                    }, 1000);
+                    conversationState = 3;
+                    break;
+                
+                case 3:
+                    if (input.toLowerCase().trim() === 'reset') {
+                        conversationState = 0;
+                        userDetails.cgpa = null;
+                        userDetails.course = '';
+                        userDetails.skills = '';
+                        botResponse(questions[0]);
+                    } else {
+                        botResponse("Our current session is complete. Please type 'reset' to begin a new search.");
+                    }
+                    break;
+            }
+        }
+        
+        function sendMessage() {
+            const userInputText = userInput.value.trim();
+            if (userInputText === '') return;
+
+            addMessage(userInputText, 'user');
+            userInput.value = '';
+
+            handleConversation(userInputText);
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        window.onload = () => {
+            botResponse(questions[0]);
+        };
+    </script>
+
+</body>
+</html>
