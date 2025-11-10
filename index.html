@@ -1,296 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Recommendation Chatbot</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(to right top, #65dfc9, #6cdbeb);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        #chatbot-container {
-            width: 100%;
-            max-width: 480px;
-            height: 90vh;
-            max-height: 720px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        #chat-header {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        #chat-window {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background-color: #f9f9f9;
-        }
-        .message {
-            max-width: 75%;
-            padding: 12px 18px;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-        .bot-message {
-            background-color: #eef1f5;
-            color: #333;
-            align-self: flex-start;
-            border-radius: 20px 20px 20px 5px;
-        }
-        .user-message {
-            background-color: #007bff;
-            color: #fff;
-            align-self: flex-end;
-            border-radius: 20px 20px 5px 20px;
-        }
-        #input-container {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            border-top: 1px solid #f0f0f0;
-            background-color: #fff;
-        }
-        #user-input {
-            flex-grow: 1;
-            border: none;
-            background-color: #f0f2f5;
-            border-radius: 20px;
-            padding: 12px 18px;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-        }
-        #user-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-        }
-        #send-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            width: 44px;
-            height: 44px;
-            margin-left: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #send-btn:hover {
-            background-color: #0056b3;
-        }
-        #send-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Info Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      background: #2b7a78;
+      color: white;
+      padding: 15px;
+      margin: 0;
+    }
+    .container { margin-top: 40px; }
+    input, select, button {
+      margin: 8px;
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #999;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #2b7a78;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #3aafa9; }
+    .hidden { display: none; }
+    .info-box {
+      margin-top: 30px;
+      background: white;
+      display: inline-block;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      text-align: left;
+      width: 70%;
+    }
+    .back-btn {
+      margin-top: 20px;
+      background: #444;
+    }
+    .back-btn:hover {
+      background: #555;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="chatbot-container">
-        <div id="chat-header">
-            Career Advisor Bot
-        </div>
-        <div id="chat-window">
-        </div>
-        <div id="input-container">
-            <input type="text" id="user-input" placeholder="Type a message...">
-            <button id="send-btn">
-                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-            </button>
-        </div>
-    </div>
+  <h1>College Info Chatbot</h1>
 
-    <script>
-        const chatWindow = document.getElementById('chat-window');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
+  <!-- Start Screen -->
+  <div class="container" id="roleSelect">
+    <button onclick="showStudentLogin()">Student Login</button>
+    <button onclick="showGuest()">Guest User</button>
+  </div>
 
-        const ADZUNA_APP_ID = "b00b1439";
-        const ADZUNA_APP_KEY = "8668eaab747f3ed6695e1df73d416a5a";
+  <!-- Student Login -->
+  <div class="container hidden" id="studentLogin">
+    <h2>Student Login</h2>
+    <select id="branch">
+      <option value="">Select Branch</option>
+      <option>Computer Science</option>
+      <option>Mechanical</option>
+      <option>Electronics and communication</option>
+    </select><br>
+    <input type="text" id="name" placeholder="Student Name"><br>
+    <input type="text" id="reg" placeholder="Register Number"><br>
+    <button onclick="login()">Login</button><br>
+    <button class="back-btn" onclick="goBackToMain()">⬅ Back</button>
+  </div>
 
-        let conversationState = 0;
-        const userDetails = {
-            cgpa: null,
-            course: '',
-            skills: ''
-        };
-        
-        const questions = [
-            "Hello! I'm here to help you with career recommendations. To start, what is your CGPA (e.g., 8.5)?",
-            "Great! Now, what is your course or major? (e.g., computer science, mechanical, electronics, AI&ML, civil)"
-        ];
+  <!-- Guest Menu -->
+  <div class="container hidden" id="guestMenu">
+    <h2>Welcome Guest!</h2>
+    <button onclick="showBranchInfo()">Branches Information for Admission</button><br>
+    <button onclick="showFees()">Fees Information</button><br>
+    <button onclick="showAdvantages()">Advantages of Joining Our College</button><br>
+    <button class="back-btn" onclick="goBackToMain()">⬅ Back</button>
+  </div>
 
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            messageDiv.textContent = text;
-            chatWindow.appendChild(messageDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+  <!-- Guest Output -->
+  <div id="guestOutput" class="info-box hidden"></div>
 
-        function botResponse(text) {
-            setTimeout(() => {
-                addMessage(text, 'bot');
-            }, 500);
-        }
+  <!-- Student Info -->
+  <div id="studentInfo" class="info-box hidden"></div>
 
-        function getSkillsQuestion(course) {
-            const courseLower = course.toLowerCase();
-            let skillsExample = "";
+  <script>
+    const students = [
+      { branch: "Computer Science", name: "Mohammed Rashid", reg: "485CS23036", cgpa: 6 },
+      { branch: "Computer Science", name: "Rohith Kumar Naika", reg: "485CS23048", cgpa: 6 },
+      { branch: "Mechanical", name: "Shahid Pasha", reg: "485ME23047", cgpa: 9 },
+      { branch: "Electronics and communication", name: "Dhanush B.S", reg: "485EC23013", cgpa: 7 },
+    ];
 
-            if (courseLower.includes('computer science') || courseLower.includes('information technology')) {
-                skillsExample = "python, java, data analysis, UI/UX";
-            } else if (courseLower.includes('mechanical')) {
-                skillsExample = "CAD, robotics, thermal design, manufacturing";
-            } else if (courseLower.includes('electronics')) {
-                skillsExample = "embedded systems, VLSI, networking, signal processing";
-            } else if (courseLower.includes('ai') || courseLower.includes('ml')) {
-                skillsExample = "python, tensorflow, data science, NLP";
-            } else if (courseLower.includes('civil')) {
-                skillsExample = "structural design, AutoCAD, surveying, project management";
-            } else {
-                skillsExample = "python, design, marketing, data analysis";
-            }
-            
-            return `Thanks. Finally, what are some of your skills or interests? (e.g., ${skillsExample})`;
-        }
+    function showStudentLogin() {
+      hideAll();
+      document.getElementById("studentLogin").classList.remove("hidden");
+    }
 
-        async function getRecommendation() {
-            const searchQuery = `${userDetails.skills} ${userDetails.course}`;
-            const countryCode = 'in'; 
-            const apiUrl = `https://api.adzuna.com/v1/api/jobs/${countryCode}/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=3&what=${encodeURIComponent(searchQuery)}`;
+    function showGuest() {
+      hideAll();
+      document.getElementById("guestMenu").classList.remove("hidden");
+    }
 
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
+    function login() {
+      const branch = document.getElementById("branch").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const reg = document.getElementById("reg").value.trim();
 
-                if (data.results && data.results.length > 0) {
-                    let recommendationText = `Based on a live job search in your region for "${searchQuery}", here are some potential career paths:\n\n`;
-                    
-                    data.results.forEach((job, index) => {
-                        const cleanDescription = job.description.replace(/<[^>]*>?/gm, '');
-                        recommendationText += `${index + 1}. ${job.title}\nDescription: ${cleanDescription.substring(0, 150)}...\n\n`;
-                    });
-                    
-                    return recommendationText;
-                } else {
-                    return `I couldn't find any specific job listings for "${searchQuery}". I'd recommend broadening your search terms or exploring roles like Project Coordinator or Business Analyst.`;
-                }
-            } catch (error) {
-                console.error("API Error:", error);
-                return "Sorry, I'm having trouble connecting to the job search service right now. Please check your internet connection and API keys.";
-            }
-        }
-        
-        async function handleConversation(input) {
-            switch (conversationState) {
-                case 0:
-                    if (isNaN(parseFloat(input))) {
-                        botResponse("Please enter a valid number for your CGPA.");
-                        return;
-                    }
-                    userDetails.cgpa = parseFloat(input);
-                    
-                    if (userDetails.cgpa < 6.0) {
-                        botResponse("Got it. Remember, your CGPA is just one number. Practical skills and projects are what truly matter. Let's find a great path for you based on your interests.");
-                        
-                        conversationState++; 
-                        setTimeout(() => {
-                            botResponse(questions[conversationState]);
-                        }, 800);
-            
-                    } else {
-                        conversationState++;
-                        botResponse(questions[conversationState]);
-                    }
-                    break;
+      const student = students.find(
+        (s) =>
+          s.branch === branch &&
+          s.name.toLowerCase() === name.toLowerCase() &&
+          s.reg === reg
+      );
 
-                case 1:
-                    userDetails.course = input;
-                    conversationState++;
-                    const skillsQuestion = getSkillsQuestion(userDetails.course);
-                    botResponse(skillsQuestion);
-                    break;
+      if (student) {
+        hideAll();
+        const info = document.getElementById("studentInfo");
+        info.classList.remove("hidden");
+        info.innerHTML = `
+          <h2>Welcome, ${student.name}!</h2>
+          <p><b>Branch:</b> ${student.branch}</p>
+          <p><b>Register Number:</b> ${student.reg}</p>
+          <p><b>CGPA:</b> ${student.cgpa}</p>
+          <hr>
+          <h3>Career Recommendation:</h3>
+          <p>${careerSuggest(student.cgpa)}</p>
+          <button class="back-btn" onclick="goBackToMain()">⬅ Back to Home</button>
+        `;
+      } else {
+        alert("Invalid details! Please check branch, name, or register number.");
+      }
+    }
 
-                case 2:
-                    userDetails.skills = input;
-                    
-                    botResponse("Thank you! Searching for live career data based on your profile...");
+    function careerSuggest(cgpa) {
+      if (cgpa >= 8) return "You can go for core jobs or higher studies abroad!";
+      if (cgpa >= 7) return "Good for IT companies, internships, and skill development.";
+      return "Focus on improving your skills and projects — plenty of options ahead!";
+    }
 
-                    const recommendation = await getRecommendation(); 
-                    botResponse(recommendation);
+    function showBranchInfo() {
+      const output = document.getElementById("guestOutput");
+      hideAll();
+      output.classList.remove("hidden");
+      output.innerHTML = `
+        <h2>Branch Information</h2>
+        <ul>
+          <li><b>Computer Science:</b> Learn software development, AI, and web technologies.</li>
+          <li><b>Civil:</b> Focuses on construction, design, and infrastructure.</li>
+          <li><b>Electronics and Communication:</b> Learn circuits, communication systems, and IoT.</li>
+          <li><b>Electrical and Electronics Engineering:</b> Study power systems and electrical devices.</li>
+          <li><b>ADFT:</b> Advanced Diploma in Fashion Technology – design & creativity.</li>
+          <li><b>Mechanical:</b> Learn machinery, design, and manufacturing.</li>
+        </ul>
+        <button class="back-btn" onclick="showGuest()">⬅ Back</button>
+      `;
+    }
 
-                    setTimeout(() => {
-                        botResponse("If you want to start a new search, just type 'reset'.");
-                    }, 1000);
-                    conversationState = 3;
-                    break;
-                
-                case 3:
-                    if (input.toLowerCase().trim() === 'reset') {
-                        conversationState = 0;
-                        userDetails.cgpa = null;
-                        userDetails.course = '';
-                        userDetails.skills = '';
-                        botResponse(questions[0]);
-                    } else {
-                        botResponse("Our current session is complete. Please type 'reset' to begin a new search.");
-                    }
-                    break;
-            }
-        }
-        
-        function sendMessage() {
-            const userInputText = userInput.value.trim();
-            if (userInputText === '') return;
+    function showFees() {
+      const output = document.getElementById("guestOutput");
+      hideAll();
+      output.classList.remove("hidden");
+      output.innerHTML = `
+        <h2>Fees Information</h2>
+        <table border="1" style="margin:auto; border-collapse:collapse; width:80%;">
+          <tr><th>Branch</th><th>Annual Fees (₹)</th></tr>
+          <tr><td>Computer Science</td><td>_</td></tr>
+          <tr><td>Civil</td><td>_</td></tr>
+          <tr><td>Electronics and Communication</td><td>_</td></tr>
+          <tr><td>Electrical and Electronics Engineering</td><td>_</td></tr>
+          <tr><td>ADFT</td><td>_</td></tr>
+          <tr><td>Mechanical</td><td>_</td></tr>
+        </table>
+        <button class="back-btn" onclick="showGuest()">⬅ Back</button>
+      `;
+    }
 
-            addMessage(userInputText, 'user');
-            userInput.value = '';
+    function showAdvantages() {
+      const output = document.getElementById("guestOutput");
+      hideAll();
+      output.classList.remove("hidden");
+      output.innerHTML = `
+        <h2>Advantages of Joining Our College</h2>
+        <ul>
+          <li>Strong placement opportunities with reputed companies.</li>
+          <li>Experienced faculty and advanced labs.</li>
+          <li>Focus on both academic and practical learning.</li>
+          <li>Scholarships and internship programs.</li>
+          <li>Support for higher education and career growth.</li>
+        </ul>
+        <button class="back-btn" onclick="showGuest()">⬅ Back</button>
+      `;
+    }
 
-            handleConversation(userInputText);
-        }
+    function goBackToMain() {
+      hideAll();
+      document.getElementById("roleSelect").classList.remove("hidden");
+    }
 
-        sendBtn.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        window.onload = () => {
-            botResponse(questions[0]);
-        };
-    </script>
-
+    function hideAll() {
+      document.querySelectorAll('.container, .info-box').forEach(el => el.classList.add('hidden'));
+    }
+  </script>
 </body>
 </html>
